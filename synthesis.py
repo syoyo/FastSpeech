@@ -52,8 +52,8 @@ if __name__ == "__main__":
     num = 112000
     alpha = 1.0
     model = get_FastSpeech(num)
-    #words = "Let’s go out to the airport. The plane landed ten minutes ago."
-    words = "I'am happy to see you again."
+    words = "Let's go out to the airport. The plane landed ten minutes ago."
+    #words = "I'am happy to see you again."
 
     start = time.time()
     mel, mel_postnet, mel_torch, mel_postnet_torch = synthesis(
