@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-import matplotlib
-import matplotlib.pyplot as plt
+#import matplotlib
+#import matplotlib.pyplot as plt
 import numpy as np
 import time
 import os
@@ -84,4 +84,4 @@ if __name__ == "__main__":
     end = time.time()
     print('tacotron+waveglow', end - start)
 
-    utils.plot_data([mel.numpy(), mel_postnet.numpy(), mel_tac2])
+    #utils.plot_data([mel.numpy(), mel_postnet.numpy(), mel_tac2])

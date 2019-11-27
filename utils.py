@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
+#import matplotlib
+#import matplotlib.pyplot as plt
 import os
 
 import Tacotron2
@@ -27,15 +27,15 @@ def get_param_num(model):
     return num_param
 
 
-def plot_data(data, figsize=(12, 4)):
-    _, axes = plt.subplots(1, len(data), figsize=figsize)
-    for i in range(len(data)):
-        axes[i].imshow(data[i], aspect='auto',
-                       origin='bottom', interpolation='none')
-
-    if not os.path.exists("img"):
-        os.mkdir("img")
-    plt.savefig(os.path.join("img", "model_test.jpg"))
+#def plot_data(data, figsize=(12, 4)):
+#    _, axes = plt.subplots(1, len(data), figsize=figsize)
+#    for i in range(len(data)):
+#        axes[i].imshow(data[i], aspect='auto',
+#                       origin='bottom', interpolation='none')
+#
+#    if not os.path.exists("img"):
+#        os.mkdir("img")
+#    plt.savefig(os.path.join("img", "model_test.jpg"))
 
 
 def get_mask_from_lengths(lengths, max_len=None):
