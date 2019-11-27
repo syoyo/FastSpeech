@@ -52,23 +52,36 @@ if __name__ == "__main__":
     num = 112000
     alpha = 1.0
     model = get_FastSpeech(num)
-    words = "Let’s go out to the airport. The plane landed ten minutes ago."
+    #words = "Let’s go out to the airport. The plane landed ten minutes ago."
+    words = "I'am happy to see you again."
 
+    start = time.time()
     mel, mel_postnet, mel_torch, mel_postnet_torch = synthesis(
         model, words, alpha=alpha)
+    end = time.time()
+    print('synthesis', end - start)
 
     if not os.path.exists("results"):
         os.mkdir("results")
+    start = time.time()
     Audio.tools.inv_mel_spec(mel_postnet, os.path.join(
         "results", words + "_" + str(num) + "_griffin_lim.wav"))
+    end = time.time()
+    print('griffin_lim', end - start)
 
     wave_glow = utils.get_WaveGlow()
+    start = time.time()
     waveglow.inference.inference(mel_postnet_torch, wave_glow, os.path.join(
         "results", words + "_" + str(num) + "_waveglow.wav"))
+    end = time.time()
+    print('waveglow', end - start)
 
     tacotron2 = utils.get_Tacotron2()
+    start = time.time()
     mel_tac2, _, _ = utils.load_data_from_tacotron2(words, tacotron2)
     waveglow.inference.inference(torch.stack([torch.from_numpy(
         mel_tac2).to(device)]), wave_glow, os.path.join("results", "tacotron2.wav"))
+    end = time.time()
+    print('tacotron+waveglow', end - start)
 
     utils.plot_data([mel.numpy(), mel_postnet.numpy(), mel_tac2])
