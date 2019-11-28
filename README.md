@@ -38,8 +38,16 @@ The Implementation of FastSpeech Based on Pytorch.
 ## Training
 Run `python train.py`.
 
-## Test
-Run `python synthesis.py`.
+## Synthesis
+
+Run `python synthesis.py --input input.txt --output output.wav`.
+
+### Options
+
+```
+--disable_waveglow : Do not use waveglow for mel to wav conversion(instead use griffin-rim. this will generate the speech faster but noisy)
+--tacotron : Do not synthesize reference speech sound which uses Tacotron2 + waveglow.
+```
 
 ## Pretrained Model
 - Baidu: [Step:112000](https://pan.baidu.com/s/1by3-8t3A6uihK8K9IFZ7rg) Enter Code: xpk7
