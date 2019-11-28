@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+import argparse
 import os
 import sys
 import torch
@@ -49,21 +52,29 @@ def synthesis(model, text, alpha=1.0):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("need input .txt file")
-        sys.exit(-1)
+    parser = argparse.ArgumentParser(description='Synthesize speech using FastSpeech + waveglow')
+    parser.add_argument('--input', nargs='?', type=str,
+                        help='Input .txt filename.')
+    parser.add_argument('--output', nargs='?', type=str,
+                        help='Output .wav filename.')
+    parser.add_argument('--tacotron', action='store_true',
+                        help='Synthesize speech using Tacotron2 + waveglow for the reference.')
+    parser.add_argument('--disable_waveglow', action='store_true',
+                        help='Use griffin-lim instead of waveglow. Synthesize will be faster, but will be noisy.')
+
+    args = parser.parse_args(sys.argv[1:])
 
     # Test
     num = 112000
     alpha = 1.0
     model = get_FastSpeech(num)
-    f = open(sys.argv[1], "r")
+    f = open(args.input, "r")
     words = f.read()
     # "Let's go out to the airport. The plane landed ten minutes ago."
     #words = "I'am happy to see you again."
     print('synthesizing phrase:', words)
 
-    output_basename = "output"
+    output_filename = args.output
 
     start = time.time()
     mel, mel_postnet, mel_torch, mel_postnet_torch = synthesis(
@@ -73,25 +84,27 @@ if __name__ == "__main__":
 
     if not os.path.exists("results"):
         os.mkdir("results")
-    start = time.time()
-    Audio.tools.inv_mel_spec(mel_postnet, os.path.join(
-        "results", output_basename + "_" + str(num) + "_griffin_lim.wav"))
-    end = time.time()
-    print('griffin_lim', end - start)
 
-    wave_glow = utils.get_WaveGlow()
-    start = time.time()
-    waveglow.inference.inference(mel_postnet_torch, wave_glow, os.path.join(
-        "results", output_basename + "_" + str(num) + "_waveglow.wav"))
-    end = time.time()
-    print('waveglow', end - start)
+    if args.disable_waveglow:
+        start = time.time()
+        Audio.tools.inv_mel_spec(mel_postnet, output_filename)
+        end = time.time()
+        print('griffin_lim', end - start)
+    else:
+        wave_glow = utils.get_WaveGlow()
+        start = time.time()
+        waveglow.inference.inference(mel_postnet_torch, wave_glow, output_filename)
+        end = time.time()
+        print('waveglow', end - start)
 
-    #tacotron2 = utils.get_Tacotron2()
-    #start = time.time()
-    #mel_tac2, _, _ = utils.load_data_from_tacotron2(words, tacotron2)
-    #waveglow.inference.inference(torch.stack([torch.from_numpy(
-    #    mel_tac2).to(device)]), wave_glow, os.path.join("results", "tacotron2.wav"))
-    #end = time.time()
-    #print('tacotron+waveglow', end - start)
+    if args.tacotron:
+        wave_glow = utils.get_WaveGlow()
+        tacotron2 = utils.get_Tacotron2()
+        start = time.time()
+        mel_tac2, _, _ = utils.load_data_from_tacotron2(words, tacotron2)
+        waveglow.inference.inference(torch.stack([torch.from_numpy(
+            mel_tac2).to(device)]), wave_glow, os.path.join("results", "tacotron2.wav"))
+        end = time.time()
+        print('tacotron+waveglow', end - start)
 
     #utils.plot_data([mel.numpy(), mel_postnet.numpy(), mel_tac2])
