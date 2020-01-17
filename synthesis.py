@@ -72,6 +72,8 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(-1)
 
+    print("CUDA available:", torch.cuda.is_available())
+
     # Test
     num = 112000
     alpha = 1.0
