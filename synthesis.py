@@ -64,6 +64,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args(sys.argv[1:])
 
+    if args.input is None:
+        parser.print_help()
+        sys.exit(-1)
+
+    if args.output is None:
+        parser.print_help()
+        sys.exit(-1)
+
     # Test
     num = 112000
     alpha = 1.0
